@@ -86,7 +86,7 @@ public class InputDataProcessService {
                             Sale.builder()
                                     .saleID(Long.parseLong(lineItems[1]))
                                     .saleItems(saleItemsResult)
-                                    .SalesPersonName(lineItems[1])
+                                    .SalesPersonName(lineItems[3])
                                     .build()
                     );
                     break;

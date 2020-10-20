@@ -124,8 +124,7 @@ public class ReportDataProcess {
         reportSource.getSalesPeople().forEach(
                 person -> {
                     String personName = person.getName();
-                    salesFromPerson.put(
-                            personName,
+                    List<Sale> personSales =
                             reportSource
                                     .getSales()
                                     .stream()
@@ -133,7 +132,9 @@ public class ReportDataProcess {
                                                 return personName.equals(sale.getSalesPersonName());
                                             }
                                     )
-                                    .collect(Collectors.toList())
+                                    .collect(Collectors.toList());
+                    salesFromPerson.put(
+                            personName,personSales
                     );
                 });
 
