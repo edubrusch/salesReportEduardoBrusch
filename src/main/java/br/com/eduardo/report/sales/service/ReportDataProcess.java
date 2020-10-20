@@ -9,20 +9,24 @@ import java.util.stream.Collectors;
 
 public class ReportDataProcess {
 
-    private ReportDTO reportSource;
+    public List<Report> processReport(List<ReportDTO> reportSource) {
 
-    public Report processReport(ReportDTO reportSource) {
+        ArrayList<Report> output = new ArrayList<Report>();
+        reportSource.forEach(dto -> output.add(processItem(dto)));
+        return output;
+    }
 
-        this.reportSource = reportSource;
-        Sale best = getMostExpensiveSale();
+    private Report processItem(ReportDTO reportSource) {
 
+        Sale best = getMostExpensiveSale(reportSource.getSales());
         long customerAmount = reportSource.getCustomers().size();
         long salesPeopleAmount = reportSource.getSalesPeople().size();
-        String worstSeller = getNameWorstSalesPerson();
+        String worstSeller = getNameWorstSalesPerson(reportSource);
         long expensiveSaleID = best.getSaleID();
 
         return Report
                 .builder()
+                .fileName(reportSource.getFileName())
                 .customerAmount(String.valueOf(customerAmount))
                 .salesPersonAmount(String.valueOf(salesPeopleAmount))
                 .expensivePurchaseID(String.valueOf(expensiveSaleID))
@@ -30,9 +34,9 @@ public class ReportDataProcess {
                 .build();
     }
 
-    private Sale getMostExpensiveSale() {
+    private Sale getMostExpensiveSale(List<Sale> sales) {
         return Collections.max(
-                reportSource.getSales(), Comparator.comparing(
+                sales, Comparator.comparing(
                         sale -> {
                             return totalSaleValue(sale);
                         }
@@ -40,7 +44,7 @@ public class ReportDataProcess {
         );
     }
 
-    private String getNameWorstSalesPerson(){
+    private String getNameWorstSalesPerson(ReportDTO reportSource){
 
         Map<String, List<Sale>> salesFromPerson = new HashMap<String, List<Sale>>();
 
@@ -100,5 +104,4 @@ public class ReportDataProcess {
                 ).sum();
         return totalSale;
     }
-
 }

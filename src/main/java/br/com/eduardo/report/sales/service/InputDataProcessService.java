@@ -2,6 +2,7 @@ package br.com.eduardo.report.sales.service;
 
 import br.com.eduardo.report.sales.model.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
@@ -11,19 +12,20 @@ import java.util.stream.Stream;
 
 public class InputDataProcessService {
 
-    public ReportDTO processSalesInputFile(SalesInputFile inputFile) {
+    public ReportDTO processSalesInputFile(File inputFile) {
 
         ArrayList<String> lines = new ArrayList<String>();
-
         try {
-            Stream<String> stream = Files.lines(inputFile.getSalesFile().toPath());
+            Stream<String> stream = Files.lines(inputFile.toPath());
             stream.forEach(lines::add);
 
         } catch (IOException e) {
             throw new RuntimeException("Please verify the correct file path or if the contents are null", e);
         }
+        ReportDTO result =  categorizeFile(lines);
+        result.setFileName(inputFile.getName());
 
-        return categorizeFile(lines);
+        return result;
     }
 
     private ReportDTO categorizeFile(ArrayList<String> lines) {
@@ -43,23 +45,11 @@ public class InputDataProcessService {
 
             switch (code) {
                 case 001: {
-                    salesPeople.add(
-                            SalesPerson.builder()
-                                    .CPF(lineItems[1])
-                                    .Name(lineItems[2])
-                                    .Salary(new BigDecimal(lineItems[3]))
-                                    .build()
-                    );
+                    salesPeople.add(fillSalesPeople(lineItems));
                     break;
                 }
                 case 002: {
-                    customers.add(
-                            Customer.builder()
-                                    .CNPJ(lineItems[1])
-                                    .name(lineItems[2])
-                                    .businessArea(lineItems[3])
-                                    .build()
-                    );
+                    customers.add(fillCustomer(lineItems));
                     break;
                 }
 
@@ -72,30 +62,15 @@ public class InputDataProcessService {
 
                     for (String item : saleItems) {
                         String[] itemDetails = item.split("-");
-
-                        SaleItem currentSaleItem =
-                        SaleItem.builder()
-                                .itemID(Long.parseLong(itemDetails[0]))
-                                .itemQuantity(new BigDecimal(itemDetails[1]))
-                                .itemPrice(new BigDecimal(itemDetails[2]))
-                                .build();
-                        saleItemsResult.add(currentSaleItem);
+                        saleItemsResult.add(fillSaleDetails(itemDetails));
                     }
-
-                    sales.add(
-                            Sale.builder()
-                                    .saleID(Long.parseLong(lineItems[1]))
-                                    .saleItems(saleItemsResult)
-                                    .SalesPersonName(lineItems[3])
-                                    .build()
-                    );
+                    sales.add(fillSale(lineItems, saleItemsResult));
                     break;
                 }
                 default:
                     throw new RuntimeException(
                             "Please verify the sales file. File codes must be either 001, 002 or 003."
                     );
-
             }
         }
 
@@ -103,6 +78,38 @@ public class InputDataProcessService {
                 .customers(customers)
                 .sales(sales)
                 .salesPeople(salesPeople)
+                .build();
+    }
+
+    private SalesPerson fillSalesPeople(String[] lineItems) {
+        return SalesPerson.builder()
+                .CPF(lineItems[1])
+                .Name(lineItems[2])
+                .Salary(new BigDecimal(lineItems[3]))
+                .build();
+    }
+
+    private Customer fillCustomer(String[] lineItems) {
+        return Customer.builder()
+                .CNPJ(lineItems[1])
+                .name(lineItems[2])
+                .businessArea(lineItems[3])
+                .build();
+    }
+
+    private Sale fillSale(String[] lineItems, List<SaleItem> saleItemsResult) {
+        return Sale.builder()
+                .saleID(Long.parseLong(lineItems[1]))
+                .saleItems(saleItemsResult)
+                .SalesPersonName(lineItems[3])
+                .build();
+    }
+
+    private SaleItem fillSaleDetails(String[] itemDetails) {
+        return SaleItem.builder()
+                .itemID(Long.parseLong(itemDetails[0]))
+                .itemQuantity(new BigDecimal(itemDetails[1]))
+                .itemPrice(new BigDecimal(itemDetails[2]))
                 .build();
     }
 }

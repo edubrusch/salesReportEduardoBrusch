@@ -11,6 +11,7 @@ import java.util.List;
 @Builder
 public class ReportDTO {
 
+    private String fileName;
     private List<Customer> customers;
     private List<SalesPerson> salesPeople;
     private List<Sale> sales;

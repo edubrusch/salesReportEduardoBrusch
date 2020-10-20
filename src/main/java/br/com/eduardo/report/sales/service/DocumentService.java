@@ -7,30 +7,32 @@ import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
 import net.sf.jasperreports.engine.data.JRMapArrayDataSource;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Properties;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DocumentService {
 
-    private String templateFileLocation;
-    private String outputDirectory;
-    private String tmpJasperLocation;
-    private String tmpPrintLocation;
+    private final String templateResourceLocation = "templates/template.jrxml";
 
-    public void compileDocument(Report report) {
+    public void compileDocument(List<Report> report) {
 
-        loadDirectories();
-        Object[] dataSource = new Object[]{report.toMap()};
+        String tmpPrintLocation = System.getProperty("tmpPrintLocation");
+        String tmpJasperLocation = System.getProperty("tmpJasperLocation");
 
+        List<Object> result = new ArrayList<Object>();
+        report.forEach(r -> result.add(r.toMap()));
 
         try {
-            JasperCompileManager.compileReportToFile(templateFileLocation, tmpJasperLocation);
+
+            JRMapArrayDataSource debug = new JRMapArrayDataSource(result.toArray());
+            debug.getData();
+
+            JasperCompileManager.compileReportToFile(getReportTemplateLocation(), tmpJasperLocation);
             JasperFillManager.fillReportToFile(
                     tmpJasperLocation,
                     tmpPrintLocation,
                     null,
-                    new JRMapArrayDataSource(dataSource)
+                    new JRMapArrayDataSource(result.toArray())
             );
             JasperExportManager.exportReportToPdfFile(tmpPrintLocation);
 
@@ -39,48 +41,12 @@ public class DocumentService {
         }
     }
 
-    private void loadDirectories() {
-        templateFileLocation = getClass()
+    private String getReportTemplateLocation() {
+        return getClass()
                 .getClassLoader()
-                .getResource("templates/template.jrxml")
+                .getResource(templateResourceLocation)
                 .getFile();
-
-        Properties settings = loadProperties();
-        String base = System.getenv().get(settings.getProperty("report.base"));
-        String outputDir = settings.getProperty("output.location");
-        String jasper = settings.getProperty("report.jasper");
-        String print = settings.getProperty("report.jprint");
-
-        outputDirectory = base + "/" +  outputDir;
-        tmpJasperLocation = outputDirectory + "/" + jasper;
-        tmpPrintLocation = outputDirectory + "/" + print;
-
-        try {
-            new File(outputDirectory).mkdirs();
-            new File(tmpJasperLocation).createNewFile();
-            new File(tmpPrintLocation).createNewFile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
-
-    public Properties loadProperties() {
-        Properties reportSettings = new Properties();
-
-        try {
-            reportSettings
-                    .load(getClass()
-                            .getClassLoader()
-                            .getResourceAsStream("static/jasperSettings.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return reportSettings;
-    }
-
-
-
 }
 
 

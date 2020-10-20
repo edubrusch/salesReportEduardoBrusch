@@ -12,6 +12,7 @@ import java.util.Map;
 @Builder
 public class Report {
 
+    private String fileName;
     private String customerAmount;
     private String salesPersonAmount;
     private String expensivePurchaseID;
@@ -20,17 +21,11 @@ public class Report {
     public Map<String, Object> toMap() {
 
         Map<String, Object> parameters = new HashMap<String, Object>();
+        parameters.put("fileName", fileName);
         parameters.put("customerAmount",customerAmount);
         parameters.put("salesPersonAmount",salesPersonAmount);
         parameters.put("expensivePurchaseID",expensivePurchaseID);
         parameters.put("worstSalesPerson",worstSalesPerson);
         return parameters;
     }
-
-
-// Quantidade de clientes no arquivo de entrada
-// Quantidade de vendedor no arquivo de entrada
-// ID da venda mais cara
-// O pior vendedor
-
 }

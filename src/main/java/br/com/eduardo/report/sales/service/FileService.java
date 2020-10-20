@@ -1,73 +1,103 @@
 package br.com.eduardo.report.sales.service;
 
-
-import br.com.eduardo.report.sales.model.SalesInputFile;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Properties;
 
 public class FileService {
 
-    private String templateFileLocation;
-    private String outputDirectory;
-    private String tmpJasperLocation;
-    private String tmpPrintLocation;
+    private ArrayList<File> pendingFiles;
+    private Properties applicationProperties;
+    private File currentFile;
+
+    private final String inputFileFormat = ".dat";
+    private final String inputProcessedFileFormat = ".done.dat";
+    private final String applicationPropertiesLocation = "static/applicationSettings.properties";
 
     public FileService() {
         loadProperties();
         loadDirectories();
+        preLoadPendingFiles();
     }
 
-    public SalesInputFile ingestInputFile() {
-        File source = new File("C:/Users/Eduardo/data/in/inputSample.dat");
-        SalesInputFile inputFile = SalesInputFile.builder().salesFile(source).separator("ç").build();
-        return inputFile;
+    public boolean hasNext() {
+        return !pendingFiles.isEmpty();
     }
 
+    public File next() {
+        if(!(currentFile == null)) markFileDone(currentFile);
+        currentFile = pendingFiles.remove(0);
+        return currentFile;
+    }
 
-    public Properties loadProperties() {
-        Properties reportSettings = new Properties();
+    private void markFileDone(File doneProcessing) {
+        String newName = doneProcessing
+                .getName()
+                .replace(inputFileFormat,"")
+                .concat(inputProcessedFileFormat);
+        doneProcessing
+                .renameTo(new File(newName));
+    }
 
+    private void loadProperties() {
+        applicationProperties= new Properties();
         try {
-            reportSettings
+            applicationProperties
                     .load(getClass()
                             .getClassLoader()
-                            .getResourceAsStream("static/jasperSettings.properties"));
+                            .getResourceAsStream(applicationPropertiesLocation));
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return reportSettings;
     }
-
 
     private void loadDirectories() {
-        templateFileLocation = getClass()
-                .getClassLoader()
-                .getResource("templates/template.jrxml")
-                .getFile();
+        String base = System.getenv().get(applicationProperties.getProperty("report.base"));
+        String outputDir = base + "/" + applicationProperties.getProperty("output.location");
+        String inputDir = base + "/" + applicationProperties.getProperty("input.location");
+        String jasper = outputDir + applicationProperties.getProperty("report.jasper");
+        String print = outputDir + applicationProperties.getProperty("report.jprint");
+        String separator = applicationProperties.getProperty("input.separator");
 
-        Properties settings = loadProperties();
-        String base = System.getenv().get(settings.getProperty("report.base"));
-        String outputDir = settings.getProperty("output.location");
-        String jasper = settings.getProperty("report.jasper");
-        String print = settings.getProperty("report.jprint");
+        System.setProperty("inputFileSeparator", separator);
+        System.setProperty("inputDirectory", inputDir);
+        System.setProperty("outputDirectory", outputDir);
+        System.setProperty("tmpJasperLocation" ,jasper);
+        System.setProperty("tmpPrintLocation" ,print);
 
-        outputDirectory = base + "/" +  outputDir;
-        tmpJasperLocation = outputDirectory + "/" + jasper;
-        tmpPrintLocation = outputDirectory + "/" + print;
+        createStructure();
+    }
 
+    private void createStructure() {
         try {
-            new File(outputDirectory).mkdirs();
-            new File(tmpJasperLocation).createNewFile();
-            new File(tmpPrintLocation).createNewFile();
+            new File(System.getProperty("inputDirectory")).mkdirs();
+            new File(System.getProperty("outputDirectory")).mkdirs();
+            new File(System.getProperty("tmpJasperLocation")).createNewFile();
+            new File(System.getProperty("tmpPrintLocation")).createNewFile();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private void preLoadPendingFiles() {
+        pendingFiles = new ArrayList<File>(Arrays.asList(
+                Objects.requireNonNull(new File(System.getProperty("inputDirectory"))
+                        .listFiles((d, s) -> {
+                            return s.toLowerCase().endsWith(inputFileFormat)
+                                    && !(s.toLowerCase().endsWith(inputProcessedFileFormat));
+                        })
+                )
+            )
+        );
+    }
 
-
+//    public SalesInputFile ingestInputFile() {
+//        File source = new File("C:/Users/Eduardo/data/in/inputSample.dat");
+//        SalesInputFile inputFile = SalesInputFile.builder().salesFile(source).separator("ç").build();
+//        return inputFile;
+//    }
 
 }
