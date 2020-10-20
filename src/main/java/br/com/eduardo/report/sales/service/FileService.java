@@ -1,6 +1,8 @@
 package br.com.eduardo.report.sales.service;
 
 
+import br.com.eduardo.report.sales.model.SalesInputFile;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
@@ -16,6 +18,13 @@ public class FileService {
         loadProperties();
         loadDirectories();
     }
+
+    public SalesInputFile ingestInputFile() {
+        File source = new File("C:/Users/Eduardo/data/in/inputSample.dat");
+        SalesInputFile inputFile = SalesInputFile.builder().salesFile(source).separator("ç").build();
+        return inputFile;
+    }
+
 
     public Properties loadProperties() {
         Properties reportSettings = new Properties();

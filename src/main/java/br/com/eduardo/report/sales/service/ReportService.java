@@ -4,14 +4,12 @@ import br.com.eduardo.report.sales.model.Report;
 import br.com.eduardo.report.sales.model.ReportDTO;
 import br.com.eduardo.report.sales.model.SalesInputFile;
 
-import java.io.File;
-
 public class ReportService {
-
 
     private DocumentService documentService;
     private InputDataProcessService inputDataProcessService;
     private ReportDataProcess reportDataProcess;
+    private FileService fileService;
 
 
     public void generateReport() {
@@ -19,12 +17,11 @@ public class ReportService {
         inputDataProcessService = new InputDataProcessService();
         documentService = new DocumentService();
         reportDataProcess = new ReportDataProcess();
+        fileService = new FileService();
 
-        File source = new File("C:/Users/Eduardo/data/in/inputSample.dat");
-        SalesInputFile inputFile = SalesInputFile.builder().salesFile(source).separator("ç").build();
-        ReportDTO dto = inputDataProcessService.processSalesInputFile(inputFile);
+        SalesInputFile salesInputFile = fileService.ingestInputFile();
+        ReportDTO dto = inputDataProcessService.processSalesInputFile(salesInputFile);
         Report report = reportDataProcess.processReport(dto);
         documentService.compileDocument(report);
-
     }
 }
