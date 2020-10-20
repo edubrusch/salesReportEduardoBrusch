@@ -30,83 +30,6 @@ public class ReportDataProcess {
                 .build();
     }
 
-//    private Sale getMostExpensiveSale() {
-//        return Collections.max(
-//                reportSource.getSales(), Comparator.comparing(
-//                        s-> s.getSaleItems()
-//                                .stream()
-//                                .flatMapToLong(
-//                                        saleItem -> {
-//                                            BigDecimal total =
-//                                                    saleItem
-//                                                            .getItemPrice()
-//                                                            .multiply(
-//                                                                    saleItem.getItemQuantity()
-//                                                            );
-//                                            return (LongStream) total;
-//                                        }
-//                                )
-//                        .sum()
-//                )
-//        );
-//    }
-
-
-
-
-//    private String getNameWorstSalesPerson() {
-//
-//        Map<String, List<Sale>> salesFromPerson = new HashMap<String, List<Sale>>();
-//
-//        reportSource.getSalesPeople().forEach(
-//                person -> {
-//                    String personName = person.getName();
-//                    salesFromPerson.put(
-//                            personName,
-//                            reportSource
-//                                    .getSales()
-//                                    .stream()
-//                                    .filter(sale -> {
-//                                                return personName.equals(sale.getSalesPersonName());
-//                                            }
-//                                    )
-//                                    .collect(Collectors.toList())
-//                    );
-//                });
-//
-//        Map<String, Double> totalValuePerson = new HashMap<String, Double>();
-//
-//        salesFromPerson.forEach((name, sales) -> {
-//                    Double total =
-//                            sales.stream().mapToDouble(
-//                                    sale -> {
-//                                        Double totalSales =
-//                                                sale
-//                                                        .getSaleItems()
-//                                                        .stream()
-//                                                        .mapToDouble(
-//                                                                saleItem -> {
-//                                                                    Double total =
-//                                                                            saleItem
-//                                                                                    .getItemPrice()
-//                                                                                    .multiply(
-//                                                                                            saleItem.getItemQuantity()
-//                                                                                    )
-//                                                                                    .doubleValue();
-//                                                                    return total;
-//                                                                }
-//                                                        ).sum();
-//                                        return totalSales;
-//                                    }
-//                            ).sum();
-//                    totalValuePerson.put(name, total);
-//                }
-//        );
-//
-//        return Collections.min(totalValuePerson.entrySet(), Comparator.comparingDouble(Map.Entry::getValue)).getKey();
-//
-//    }
-
     private Sale getMostExpensiveSale() {
         return Collections.max(
                 reportSource.getSales(), Comparator.comparing(
@@ -177,13 +100,5 @@ public class ReportDataProcess {
                 ).sum();
         return totalSale;
     }
-
-
-//   O conteúdo do arquivo de saída deve resumir os seguintes dados:
-//   Quantidade de clientes no arquivo de entrada
-//   Quantidade de vendedor no arquivo de entrada
-//   ID da venda mais cara
-//   O pior vendedor
-
 
 }

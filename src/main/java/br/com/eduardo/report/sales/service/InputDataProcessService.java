@@ -76,8 +76,8 @@ public class InputDataProcessService {
                         SaleItem currentSaleItem =
                         SaleItem.builder()
                                 .itemID(Long.parseLong(itemDetails[0]))
-                                .itemPrice(new BigDecimal(itemDetails[1]))
-                                .itemQuantity(new BigDecimal(itemDetails[2]))
+                                .itemQuantity(new BigDecimal(itemDetails[1]))
+                                .itemPrice(new BigDecimal(itemDetails[2]))
                                 .build();
                         saleItemsResult.add(currentSaleItem);
                     }
