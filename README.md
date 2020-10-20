@@ -1,1 +1,1 @@
-# salesReportEduardoBrusch
+Não está sendo tratado o caso onde uma lista de items vem vazia

@@ -1,0 +1,131 @@
+<?xml version = "1.0" encoding = "UTF-8"?>
+<!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN"
+        "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
+
+<jasperReport xmlns = "http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation = "http://jasperreports.sourceforge.net/jasperreports
+   http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name = "jasper_report_template" pageWidth = "595"
+              pageHeight = "842" columnWidth = "555" leftMargin = "20" rightMargin = "20"
+              topMargin = "20" bottomMargin = "20">
+
+    <field name = "customerAmount" class = "java.lang.String" />
+    <field name = "salesPersonAmount" class = "java.lang.String" />
+    <field name = "expensivePurchaseID" class = "java.lang.String" />
+    <field name = "worstSalesPerson" class = "java.lang.String" />
+
+    <title>
+         <band height="100" splitType="Stretch">
+           <staticText>
+             <reportElement x="218" y="25" width="200" height="28" />
+             <textElement textAlignment="Justified">
+               <font size="20" isBold="true" />
+             </textElement>
+             <text><![CDATA[Sales Report]]></text>
+           </staticText>
+        </band>
+    </title>
+
+    <detail>
+
+         <band height="25" splitType="Stretch">
+
+             <staticText>
+                 <reportElement x="50" y="0" width="200" height="24" />
+                 <textElement textAlignment="Left">
+                     <font size="12" isBold="false" />
+                 </textElement>
+                 <text><![CDATA[Total Customers: ]]></text>
+             </staticText>
+
+             <textField>
+                 <reportElement x="200" y="0" width="200" height="24" />
+                 <textElement textAlignment="Left">
+                     <font size="11" isBold="true" />
+                 </textElement>
+
+                 <textFieldExpression class = "java.lang.String">
+                     <![CDATA[$F{customerAmount}]]>
+                 </textFieldExpression>
+             </textField>
+         </band>
+
+        <band height="25" splitType="Stretch">
+
+            <staticText>
+                <reportElement x="50" y="0" width="200" height="20" />
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="false" />
+                </textElement>
+                <text><![CDATA[Total SalesPeople: ]]></text>
+            </staticText>
+
+             <textField>
+                 <reportElement x="200" y="0" width="200" height="20" />
+                 <textElement textAlignment="Left">
+                     <font size="11" isBold="true" />
+                 </textElement>
+
+                 <textFieldExpression class = "java.lang.String">
+                     <![CDATA[$F{salesPersonAmount}]]>
+                 </textFieldExpression>
+             </textField>
+
+        </band>
+        <band height="25" splitType="Stretch">
+
+            <staticText>
+                <reportElement x="50" y="0" width="200" height="24" />
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="false" />
+                </textElement>
+                <text><![CDATA[Best purchase ID: ]]></text>
+            </staticText>
+
+             <textField>
+                 <reportElement x="200" y="0" width="200" height="24" />
+                 <textElement textAlignment="Left">
+                     <font size="11" isBold="true" />
+                 </textElement>
+
+                 <textFieldExpression class = "java.lang.String">
+                     <![CDATA[$F{expensivePurchaseID}]]>
+                 </textFieldExpression>
+             </textField>
+
+        </band>
+        <band height="25" splitType="Stretch">
+
+            <staticText>
+                <reportElement x="50" y="0" width="200" height="24" />
+                <textElement textAlignment="Left">
+                    <font size="12" isBold="false" />
+                </textElement>
+                <text><![CDATA[Worst seller: ]]></text>
+            </staticText>
+
+             <textField>
+                 <reportElement x="200" y="0" width="200" height="24" />
+                 <textElement textAlignment="Left">
+                     <font size="11" isBold="true" />
+                 </textElement>
+
+                 <textFieldExpression class = "java.lang.String">
+                     <![CDATA[$F{worstSalesPerson}]]>
+                 </textFieldExpression>
+             </textField>
+
+         </band>
+       </detail>
+       <pageFooter>
+         <band height="100" splitType="Stretch">
+           <staticText>
+             <reportElement x="220" y="17" width="150" height="20" />
+             <textElement />
+             <text><![CDATA[Sales Report By Eduardo Brusch]]></text>
+           </staticText>
+         </band>
+       </pageFooter>
+
+</jasperReport>
